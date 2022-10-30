@@ -2,10 +2,12 @@ import React, {useRef} from 'react';
 import './SignIn.css';
 import {auth} from "../../firebase";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
+import {useNavigate} from "react-router-dom";
 
 const SignIn = () => {
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
+    const navigate = useNavigate();
 
     const register = (e) => {
         e.preventDefault();
@@ -32,6 +34,7 @@ const SignIn = () => {
 
         signInWithEmailAndPassword(auth,email,password).then( (user) => {
             console.log(user)
+            navigate('/');
         }).catch((err) => alert(err.message))
     }
 
