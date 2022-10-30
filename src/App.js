@@ -5,15 +5,25 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Login from "./pages/Login/Login";
 import {onAuthStateChanged} from 'firebase/auth'
 import {auth} from "./firebase";
+import {useDispatch, useSelector} from "react-redux";
+import {login, logout, selectUser} from "./features/userSlice";
+import Profile from "./pages/Profile/Profile";
 
 function App() {
 
+    const user = useSelector(selectUser);
+    const dispatch = useDispatch();
+
+    console.log(user)
     useEffect(() => {
             const unsub = onAuthStateChanged(auth, (userAuth) => {
                 if (userAuth) {
-                    //
+                    dispatch(login({
+                        uid: userAuth.uid,
+                        email: userAuth.email
+                    }))
                 } else {
-                    //
+                    dispatch(logout());
                 }
             })
 
@@ -21,15 +31,17 @@ function App() {
                 unsub()
             }
         }
-        , [])
+        , [dispatch])
     return (
         <div className={'app'}>
-            <Router>
-                <Routes>
-                    <Route path={'/login'} element={<Login/>}/>
-                    <Route path={'/'} element={<HomeScreen/>}/>
-                </Routes>
-            </Router>
+            {!user ? <Login/> :
+                <Router>
+                    <Routes>
+                        <Route path={'/'} element={<HomeScreen/>}/>
+                        <Route path={'/profile'} element={<Profile/>}/>
+                    </Routes>
+                </Router>}
+
         </div>
     );
 }
